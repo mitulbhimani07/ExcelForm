@@ -7,6 +7,8 @@ export default function ExcelForm() {
   const [data, setData] = useState([]);
   const [columns, setColumns] = useState([]);
   const [selectedCols, setSelectedCols] = useState([]);
+const [addDate, setAddDate] = useState(false);
+const [dateColumnName, setDateColumnName] = useState("Generated Date");
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
@@ -33,9 +35,16 @@ export default function ExcelForm() {
   };
 
   const generateExcel = () => {
+    const today = new Date().toISOString().split("T")[0];
+
     const filteredData = data.map((row) => {
       const obj = {};
       selectedCols.forEach((col) => (obj[col] = row[col]));
+
+      if (addDate) {
+        obj[dateColumnName || "Generated Date"] = today;
+      }
+
       return obj;
     });
 
@@ -139,6 +148,28 @@ export default function ExcelForm() {
                       </motion.label>
                     ))}
                   </div>
+                </div>
+
+                <div className="mb-6 space-y-3">
+                  <label className="flex items-center gap-3 text-sm text-blue-200 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={addDate}
+                      onChange={() => setAddDate(!addDate)}
+                    />
+                    Add Current Date Column
+                  </label>
+
+                  {addDate && (
+                    <input
+                      type="text"
+                      value={dateColumnName}
+                      onChange={(e) => setDateColumnName(e.target.value)}
+                      placeholder="Date column name"
+                      className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20
+                      text-white placeholder:text-gray-400 text-sm"
+                    />
+                  )}
                 </div>
 
                 <motion.button
